@@ -1,0 +1,27 @@
+.csl-ebay-product {
+    clear: both;
+    background-color: #F8EEC0;
+    border: 1px solid #A48F2C;
+    margin: 10px 0;
+    padding: 5px;
+}
+
+.csl-ebay-product div {
+    padding: 0 0 0 5px;
+}
+
+.csl-ebay-product h3 {
+    margin: 0 0 10px 0;
+    color: ##3D3D3D;
+}
+
+.csl-ebay-product img {
+    float: left;
+    padding: 0 5px 5px 0;
+    max-width: 150px;
+    max-height: 120px;
+}
+
+.csl-ebay-product li {
+    list-style: none;
+}
