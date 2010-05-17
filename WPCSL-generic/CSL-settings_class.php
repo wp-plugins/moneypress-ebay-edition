@@ -274,6 +274,10 @@ class wpCSL_settings_item {
       echo "<input type=\"checkbox\" name=\"{$this->name}\"".((get_option($this->name)) ? ' checked' : '').">";
       break;
 
+    case "list":
+        echo $this->create_option_list();
+        break;
+
     default:
       echo $this->custom;
       break;
@@ -289,6 +293,28 @@ class wpCSL_settings_item {
     }
 
     $this->footer();
+  }
+
+  /**
+   * If $type is 'list' then $custom is a hash used to make a <select>
+   * drop-down representing the setting.  This function returns a
+   * string with the markup for that list.
+   */
+  function create_option_list() {
+      $output_list = array("<select name=\"{$this->name}\">\n");
+
+      foreach ($this->custom as $key => $value) {
+          if (get_option($this->name) === $value) {
+              $output_list[] = "<option value=\"$value\" selected=\"selected\">$key</option>\n";
+          }
+          else {
+              $output_list[] = "<option value=\"$value\">$key</option>\n";
+          }
+      }
+
+      $output_list[] = "</select>\n";
+
+      return implode('', $output_list);
   }
 
   function header() {

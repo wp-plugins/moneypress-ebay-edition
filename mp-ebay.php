@@ -91,7 +91,6 @@ function MP_ebay_show_items($attributes, $content = null) {
     }
 
     $ebay = new eBayPanhandler($ebay_app_id);
-    $seller_id = get_option('csl-mp-ebay-seller-id');
 
     extract(
         shortcode_atts(
@@ -119,28 +118,48 @@ function MP_ebay_show_items($attributes, $content = null) {
         $ebay->set_maximum_product_count($product_count);
     }
 
+    $general_options = MP_ebay_get_general_options();
+
     // If we have no keywords then we show everything associated
     // with the seller ID from the options.
     if ($keywords === null) {
-        return MP_ebay_format_all_products(
-            $ebay->get_products_from_vendor($seller_id)
-        );
+        $products = $ebay->get_products_from_vendor($seller_id, $general_options);
     }
     else {
-        // Even if we are searching by keywords, we may still be restricting
-        // our search to a specific vendor.
-        if ($seller_id) {
-            $products = $ebay->get_products_by_keywords(
-                array($keywords),
-                array('sellers' => array($seller_id))
-            );
-        }
-        else {
-            $products = $ebay->get_products_by_keywords(array($keywords));
-        }
-
-        return MP_ebay_format_all_products($products);
+        $products = $ebay->get_products_by_keywords(array($keywords), $general_options);
     }
+
+    return MP_ebay_format_all_products($products);
+}
+
+/**
+ * Here we set the options that we pass to whatever function we
+ * ultimately call to fetch products.  The functions will ignore
+ * any options that aren't appropriate to them, so we don't have
+ * to be very cautious here about giving the wrong options
+ * to the wrong method.
+ *
+ * This function returns the array of options to use when calling our
+ * eBay driver, if any.
+ */
+function MP_ebay_get_general_options() {
+    $general_options = array();
+    $seller_id       = get_option('csl-mp-ebay-seller-id');
+    $tracking_id     = get_option('csl-mp-ebay-tracking-id');
+    $network_id      = get_option('csl-mp-ebay-network-id');
+
+    if ($seller_id) {
+        $general_options['sellers'] = array($seller_id);
+    }
+
+    if ($tracking_id && $network_id) {
+        $general_options['affiliate_info'] = array(
+            'tracking_id' => $tracking_id,
+            'network_id'  => $network_id
+        );
+    }
+
+    return $general_options;
 }
 
 /**
