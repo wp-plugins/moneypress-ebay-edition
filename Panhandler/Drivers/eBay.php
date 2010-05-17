@@ -49,6 +49,20 @@ final class eBayPanhandler implements Panhandles {
      */
     private $keywords = null;
 
+    /**
+     * A hash of affiliate information.  Possible keys are:
+     *
+     *     1. 'custom_id'
+     *     2. 'network_id'
+     *     3. 'tracking_id'
+     *
+     * For details on their values see the documentation at
+     *
+     *     http://developer.ebay.com/DevZone/finding/CallRef/findItemsAdvanced.html#Request.affiliate
+     *
+     */
+    private $affiliate_info = null;
+
     //// CONSTRUCTOR ///////////////////////////////////////////
 
     /**
@@ -64,10 +78,20 @@ final class eBayPanhandler implements Panhandles {
     /**
      * Takes the name of an eBay seller as a string and returns an
      * array of all of the products on sale by that vendor.
+     *
+     * Options:
+     *
+     *   'affiliate_info' : A hash suitable to be assigned to
+     *   $affiliate_info as documented above.
+     *
      */
     public function get_products_from_vendor($vendor, $options = null) {
         $this->sellers = array($vendor);
         $this->keywords = null;
+
+        if (isset($options['affiliate_info'])) {
+            $this->affiliate_info = $options['affiliate_info'];
+        }
 
         return $this->extract_products(
             $this->get_response_xml()
@@ -80,12 +104,18 @@ final class eBayPanhandler implements Panhandles {
      *   'sellers' : An array of strings containing seller IDs.
      *   Products returned will be restriced to these sellers.
      *
+     *   'affiliate_info' : A hash suitable to be assigned to
+     *   $affiliate_info as documented above.
+     *
      */
     public function get_products_by_keywords($keywords, $options = null) {
         $this->keywords = $keywords;
 
         if (isset($options['sellers'])) {
             $this->sellers = $options['sellers'];
+        }
+        if (isset($options['affiliate_info'])) {
+            $this->affiliate_info = $options['affiliate_info'];
         }
 
         return $this->extract_products(
@@ -123,6 +153,7 @@ final class eBayPanhandler implements Panhandles {
         }
 
         $options = $this->apply_filters($options);
+        $options = $this->apply_affiliate_info($options);
 
         return sprintf(
             "%s?%s",
@@ -130,6 +161,27 @@ final class eBayPanhandler implements Panhandles {
             http_build_query($options)
         );
     }
+
+    /**
+     * Takes a hash of options used to build the request URI and adds
+     * any affiliate information that may be present.
+     */
+    private function apply_affiliate_info($options) {
+        if ($this->affiliate_info) {
+            $key_to_ebay_option = array(
+                'custom_id'   => 'affiliate.customId',
+                'network_id'  => 'affiliate.networkId',
+                'tracking_id' => 'affiliate.trackingId'
+            );
+
+            foreach ($key_to_ebay_option as $key => $ebay_option) {
+                $options[$ebay_option] = $this->affiliate_info[$key];
+            }
+        }
+
+        return $options;
+    }
+
 
     /**
      * Takes a hash of options used to build the request URL and adds

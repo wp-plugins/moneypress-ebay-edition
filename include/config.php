@@ -64,4 +64,35 @@ $MP_ebay_plugin->settings->add_item('Primary Settings', 'eBay Seller ID', 'csl-m
 $MP_ebay_plugin->settings->add_item('Primary Settings', 'Number of Products', 'csl-mp-ebay-product-count', 'text', false,
                            'The number of products to show on your site.');
 
+$MP_ebay_plugin->settings->add_section(
+    array(
+        'name'        => 'Affiliate Settings',
+        'description' =>
+        '<p>Here you can provide your affiliate information, which will automatically be ' .
+        'put into the links of for the products displayed on the site.</p>'
+    )
+);
+
+$MP_ebay_plugin->settings->add_item('Affiliate Settings', 'Network ID', 'csl-mp-ebay-network-id', 'list', false,
+                                  '<p>Specificies your tracking parnter for affiliate commissions.  This field is ' .
+                                  'required if you provide a tracking ID.  For example, if you sign up at the ' .
+                                  '<a href="https://www.ebaypartnernetwork.com/files/hub/en-US/index.html">eBay ' .
+                                  'Partner Network</a> you will receive a confirmation email in a few days with ' .
+                                  'tracking ID.',
+                                  array(
+                                      'eBay Partner Network' => 9,
+                                      'Be Free'              => 2,
+                                      'Affilinet'            => 3,
+                                      'TradeDoubler'         => 4,
+                                      'Mediaplex'            => 5,
+                                      'DoubleClick'          => 6,
+                                      'Allyes'               => 7,
+                                      'BJMT'                 => 8
+                                  )
+    );
+
+$MP_ebay_plugin->settings->add_item('Affiliate Settings', 'Tracking ID', 'csl-mp-ebay-tracking-id', 'text', false,
+                                  'The tracking ID provided to your by your tracking partner.  For some services ' .
+                                  'this may be called your campaign ID or affiliate ID.');
+
 ?>
