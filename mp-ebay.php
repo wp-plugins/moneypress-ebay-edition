@@ -3,7 +3,7 @@
   Plugin Name: Moneypress eBay Edition
   Plugin URI: http://www.cybersprocket.com/products/moneypress-ebay/
   Description: Our Moneypress eBay plugin allows you to display products from eBay on your web site.
-  Version: 1.0
+  Version: 1.1
   Author: Cyber Sprocket Labs
   Author URI: http://www.cybersprocket.com
   License: GPL3
