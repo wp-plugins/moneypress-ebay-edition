@@ -1,15 +1,15 @@
 <?php
 /*
-  Plugin Name: Moneypress eBay Edition
+  Plugin Name: MoneyPress : eBay Edition
   Plugin URI: http://www.cybersprocket.com/products/moneypress-ebay/
-  Description: Our Moneypress eBay plugin allows you to display products from eBay on your web site.
+  Description: Our MoneyPress eBay plugin allows you to display products from eBay on your web site.
   Version: 1.1
   Author: Cyber Sprocket Labs
   Author URI: http://www.cybersprocket.com
   License: GPL3
 */
 
-/* mp-ebay.php --- Moneypress eBay Edition                              */
+/* mp-ebay.php --- MoneyPress : eBay Edition                              */
 
 /* Copyright (C) 2010 Cyber Sprocket Labs <info@cybersprocket.com>      */
 
@@ -120,16 +120,11 @@ function MP_ebay_show_items($attributes, $content = null) {
 
     $general_options = MP_ebay_get_general_options();
 
-    // If we have no keywords then we show everything associated
-    // with the seller ID from the options.
-    if ($keywords === null) {
-        $products = $ebay->get_products_from_vendor($seller_id, $general_options);
-    }
-    else {
-        $products = $ebay->get_products_by_keywords(array($keywords), $general_options);
+    if ($keywords !== null) {
+        $general_options['keywords'] = array($keywords);
     }
 
-    return MP_ebay_format_all_products($products);
+    return MP_ebay_format_all_products( $ebay->get_products($general_options) );
 }
 
 /**
@@ -147,6 +142,7 @@ function MP_ebay_get_general_options() {
     $seller_id       = get_option('csl-mp-ebay-seller-id');
     $tracking_id     = get_option('csl-mp-ebay-tracking-id');
     $network_id      = get_option('csl-mp-ebay-network-id');
+    $sort_order      = get_option('csl-mp-ebay-sort-order');
 
     if ($seller_id) {
         $general_options['sellers'] = array($seller_id);
@@ -157,6 +153,10 @@ function MP_ebay_get_general_options() {
             'tracking_id' => $tracking_id,
             'network_id'  => $network_id
         );
+    }
+
+    if ($sort_order && $sort_order !== 'no-sorting') {
+        $general_options['sort_order'] = $sort_order;
     }
 
     return $general_options;
@@ -196,6 +196,11 @@ $MB_ebay_product_template = '<div class="csl-ebay-product">
  */
 function MB_ebay_format_product($product) {
     global $MB_ebay_product_template;
+
+    if ($product->image_urls[0] === null) {
+        $product->image_urls[0] = MP_EBAY_PLUGINURL.'/images/ImageNA.png';
+    }
+
     return sprintf(
         $MB_ebay_product_template,
         $product->web_urls[0],

@@ -34,11 +34,26 @@
  * pieces of data that we run across.
  */
 final class PanhandlerProduct {
-    public $name;
-    public $description;
-    public $price;
-    public $web_urls;
-    public $image_urls;
+    public $name;        // String
+    public $description; // String
+    public $currency;    // String
+    public $price;       // String
+    public $web_urls;    // Array of strings
+    public $image_urls;  // Array of strings
+}
+
+/**
+ * This is an extremely simple class that basically serves as an easy
+ * way of detecting returned errors by using is_a(). Constructor takes
+ * a single param which should be a string containting the error
+ * message.
+ */
+class PanhandlerError {
+  public $message;
+
+  public function __construct($message) {
+    $this->message = $message;
+  }
 }
 
 /**
@@ -46,7 +61,7 @@ final class PanhandlerProduct {
  * interface should throw this exception with an appropriate error
  * message.
  */
-class PanhandlerNotSupported extends Exception {}
+class PanhandlerNotSupported extends PanhandlerError {}
 
 /**
  * If a driver requires functionality that is not a standard part of
@@ -57,7 +72,7 @@ class PanhandlerNotSupported extends Exception {}
  *         throw new PanhandlerMissingRequirement("cURL must be installed");
  *     }
  */
-class PanhandlerMissingRequirement extends Exception {}
+class PanhandlerMissingRequirement extends PanhandlerError {}
 
 /**
  * All drivers need to implement this.
@@ -65,26 +80,22 @@ class PanhandlerMissingRequirement extends Exception {}
 interface Panhandles {
 
     /**
-     * Accepts the identifier of a vendor as a string, and returns an
-     * array of PanhandlerProduct objects representing all of the
-     * items that vendor is selling.
+     * Returns an array of PanhandlerProduct objects.  The $options
+     * argument is a hash of any driver-specific parameters to help
+     * narrow down the product search.
      *
-     * The $options array is a named array providing any driver
-     * specific settings.  Drivers which do not use the $options given
-     * are required to ignore them.
+     * The drivers need to be aware of the options they are receiving
+     * and they should throw a PanhandlerNotSupported exception for
+     * any options that they do not understand.
      */
-    public function get_products_from_vendor($vendor, $options = null);
+    public function get_products($options = null);
 
     /**
-     * Accepts $keywords as an array of strings, and returns an array
-     * of PanhandlerProduct objects representing all of the products
-     * matching those keywords.
-     *
-     * The $options array is a named array providing any driver
-     * specific settings.  Drivers which do not use the $options given
-     * are required to ignore them.
+     * This should return an array list of all the options that the
+     * driver understands. This function will be used to filter out
+     * erroneous options before sending them to get_products().
      */
-    public function get_products_by_keywords($keywords, $options = null);
+    public function get_supported_options();
 
     /**
      * Sets the maximum number of products to return from any method.
