@@ -1,16 +1,19 @@
-=== Moneypress eBay Edition ===
+=== MoneyPress : eBay Edition ===
+Plugin Name: MoneyPress : eBay Edition
 Contributors: cybersprocket
 Donate Link: http://www.cybersprocket.com/products/moneypress-ebay/
 Tags: plugin,post,page,ebay,affiliate,store
 Requires at least: 2.6
 Tested up to: 2.9.2
-Stable tag: 1.1
+Stable tag: 1.2
 
-Our Moneypress eBay plugin allows you to display products for sell on eBay based on keywords you choose.
+Our MoneyPress eBay plugin allows you to display products for sell on eBay based on keywords you choose.
 
 == Description ==
 
-Our Moneypress eBay plugin allows you to display products for sell on eBay based on keywords you choose.  You can also control how many of those products you want to appear on your site.
+Our MoneyPress : eBay Edition plugin allows you to easily display products from eBay based on keywords you provide. It makes it simple to show product listings for anything relevant to your site. All product entries also come with images, current asking prices, and links to eBay to get further information about the product.
+
+List your own products by entering your seller ID, or sell any product on eBay and earn a commission with your eBay Partner ID or other approved affiliate program ID. If you are an eBay seller or an approved eBay affiliate this plugin will help boost the income earning potential of your site in just a few easy steps.
 
 After installing the plugin (see below for instructions) you can show products on any page on your site by using the ‘[ebay_show_items]’ shortcode.  For example, entering the shortcode
 
@@ -28,7 +31,7 @@ on one of your pages to list everything you are selling on eBay.
 
  * Get the plugin from Cyber Sprocket Labs.
  * Install the plugin using the Zip file.
- * Browse to ‘Moneypress eBay Edition’ in your admin settings menu.
+ * Browse to ‘MoneyPress : eBay Edition’ in your admin settings menu.
  * (Optional) Enter your seller ID if you want to list only your own products.
  * (Optional) Set the number of products you wish to show per page.  By default, ten products will be shown.
  * (Optional) Enter your affiliate information.  For example, see the description for the ‘Network ID’ on how to sign up as an eBay affiliate.
@@ -41,6 +44,9 @@ See the knowledgebase at http://redmine.cybersprocket.com/projects/mpress-ebay/w
 Please direct all inquiries to: info@cybersprocket.com
 
 == Changelog ==
+
+= v1.2 =
+* Allow users to sort products by price.
 
 = v1.1 (May 17th 2010) =
 * Added support for affiliate networking.

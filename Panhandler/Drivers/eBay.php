@@ -26,6 +26,16 @@ final class eBayPanhandler implements Panhandles {
     private $app_id;
 
     /**
+     * Support options.
+     */
+    private $supported_options = array(
+        'affiliate_info',
+        'keywords',
+        'sellers',
+        'sort_order',
+    );
+
+    /**
      * The number of products that we return.  The value can be
      * changed by set_maximum_product_count().
      */
@@ -63,6 +73,15 @@ final class eBayPanhandler implements Panhandles {
      */
     private $affiliate_info = null;
 
+    /**
+     * A string representing any sorting to apply to the search.  For
+     * details on the possible values, see the documentation at
+     *
+     *     http://developer.ebay.com/DevZone/finding/CallRef/types/SortOrderType.html
+     *
+     */
+    private $sort_order = null;
+
     //// CONSTRUCTOR ///////////////////////////////////////////
 
     /**
@@ -76,47 +95,20 @@ final class eBayPanhandler implements Panhandles {
     //// INTERFACE METHODS /////////////////////////////////////
 
     /**
-     * Takes the name of an eBay seller as a string and returns an
-     * array of all of the products on sale by that vendor.
-     *
-     * Options:
-     *
-     *   'affiliate_info' : A hash suitable to be assigned to
-     *   $affiliate_info as documented above.
-     *
+     * Returns the supported $options that get_products() accepts.
      */
-    public function get_products_from_vendor($vendor, $options = null) {
-        $this->sellers = array($vendor);
-        $this->keywords = null;
-
-        if (isset($options['affiliate_info'])) {
-            $this->affiliate_info = $options['affiliate_info'];
-        }
-
-        return $this->extract_products(
-            $this->get_response_xml()
-        );
+    public function get_supported_options() {
+        return $this->supported_options;
     }
 
-    /**
-     * Options:
-     *
-     *   'sellers' : An array of strings containing seller IDs.
-     *   Products returned will be restriced to these sellers.
-     *
-     *   'affiliate_info' : A hash suitable to be assigned to
-     *   $affiliate_info as documented above.
-     *
-     */
-    public function get_products_by_keywords($keywords, $options = null) {
-        $this->keywords = $keywords;
+    public function get_products($options = null) {
+        foreach (array_keys($options) as $name) {
+            if (in_array($name, $this->supported_options) === false) {
+                throw new PanhandlerNotSupported("Received unsupported option $name");
+            }
+        }
 
-        if (isset($options['sellers'])) {
-            $this->sellers = $options['sellers'];
-        }
-        if (isset($options['affiliate_info'])) {
-            $this->affiliate_info = $options['affiliate_info'];
-        }
+        $this->parse_options($options);
 
         return $this->extract_products(
             $this->get_response_xml()
@@ -132,6 +124,25 @@ final class eBayPanhandler implements Panhandles {
     }
 
     //// PRIVATE METHODS ///////////////////////////////////////
+
+    /**
+     * Called by the interface methods which take an $options hash.
+     * This method sets the appropriate private members of the object
+     * based on the contents of hash.  It looks for the keys in
+     * $supported_options * and assigns the value to the private
+     * members with the same names.  See the documentation for each of
+     * those members for a description of their acceptable values,
+     * which this method does not try to enforce.
+     *
+     * Returns no value.
+     */
+    private function parse_options($options) {
+        foreach ($this->supported_options as $name) {
+            if (isset($options[$name])) {
+                $this->$name = $options[$name];
+            }
+        }
+    }
 
     /**
      * Returns the URL that we need to make an HTTP GET request to in
@@ -150,6 +161,10 @@ final class eBayPanhandler implements Panhandles {
 
         if ($this->keywords) {
             $options['keywords'] = urlencode(implode(' ', $this->keywords));
+        }
+
+        if ($this->sort_order) {
+            $options['sortOrder'] = $this->sort_order;
         }
 
         $options = $this->apply_filters($options);
