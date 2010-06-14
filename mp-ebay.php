@@ -3,7 +3,7 @@
   Plugin Name: MoneyPress : eBay Edition
   Plugin URI: http://www.cybersprocket.com/products/moneypress-ebay/
   Description: Our MoneyPress eBay plugin allows you to display products from eBay on your web site.
-  Version: 1.2
+  Version: 1.2.1
   Author: Cyber Sprocket Labs
   Author URI: http://www.cybersprocket.com
   License: GPL3
@@ -38,9 +38,18 @@ if (defined('MP_EBAY_PLUGINURL') === false) {
 
 require_once('include/config.php');
 
-if (class_exists('eBayPanhandler') === false) {
+if (class_exists('PanhandlerProduct') === false) {
     try {
         require_once('Panhandler/Panhandler.php');
+    }
+    catch (PanhandlerMissingRequirement $exception) {
+        add_action('admin_notices', array($exception, 'getMessage'));
+        exit(1);
+    }
+}
+
+if (class_exists('eBayPanhandler') === false) {
+    try {
         require_once('Panhandler/Drivers/eBay.php');
     }
     catch (PanhandlerMissingRequirement $exception) {
